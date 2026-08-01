@@ -1,14 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-P3PNZKS4');</script>
-    <!-- End Google Tag Manager -->
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Glow & Memories | Crimson Quiz</title>
@@ -31,7 +23,7 @@
             --font-sans: 'Montserrat', sans-serif;
             --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             
-            /* Цвета для подсветок */
+            /* Цвета для подсветки ответов */
             --correct-bg: rgba(46, 125, 50, 0.35);
             --correct-border: #4caf50;
             --wrong-bg: rgba(211, 47, 47, 0.35);
@@ -180,7 +172,7 @@
             width: 100%;
         }
 
-        /* Стиль при правильном ответе */
+        /* Подсветка правильного ответа */
         .option-btn.correct {
             background: var(--correct-bg) !important;
             border-color: var(--correct-border) !important;
@@ -188,7 +180,7 @@
             color: #ffffff;
         }
 
-        /* Стиль при неправильном ответе */
+        /* Подсветка неправильного ответа */
         .option-btn.wrong {
             background: var(--wrong-bg) !important;
             border-color: var(--wrong-border) !important;
@@ -289,20 +281,8 @@
             .btn-nav { width: 100%; text-align: center; }
         }
     </style>
-    
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-613LBYDMD2"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-613LBYDMD2');
-    </script>
 </head>
 <body>
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P3PNZKS4"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-
     <div class="ambient-glow"></div>
 
     <header>
@@ -549,7 +529,6 @@
                     html += `<div class="options-grid">`;
                     q.options.forEach((opt, idx) => {
                         let extraClass = '';
-                        // Если уже отвечали ранее на этот вопрос
                         if (userAnswers[q.id] !== undefined) {
                             if (idx === q.correctIndex) extraClass = 'correct';
                             else if (idx === userAnswers[q.id]) extraClass = 'wrong';
@@ -567,4 +546,27 @@
 
                 html += `<div class="controls">`;
                 if (currentQuestion > 0) {
-                    html += `<button class="btn-nav" id
+                    html += `<button class="btn-nav" id="btnPrev">Назад</button>`;
+                } else {
+                    html += `<div></div>`;
+                }
+
+                if (currentQuestion === quizData.length - 1) {
+                    html += `<button class="btn-nav btn-primary" id="submitBtn">Отправить ответы ❤️</button>`;
+                } else {
+                    html += `<button class="btn-nav btn-primary" id="btnNext">Далее</button>`;
+                }
+                html += `</div></div>`;
+
+                quizContainer.innerHTML = html;
+
+                if (q.isText) {
+                    const textarea = document.getElementById('textAnswer');
+                    textarea.addEventListener('input', (e) => {
+                        userAnswers[q.id] = e.target.value;
+                    });
+                } else {
+                    const optionBtns = quizContainer.querySelectorAll('.option-btn');
+                    optionBtns.forEach(btn => {
+                        btn.addEventListener('click', () => {
+      
