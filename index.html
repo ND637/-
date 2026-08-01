@@ -13,7 +13,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Glow & Memories | Crimson Quiz</title>
     
-    <!-- Google Fonts: Премиальная типографика -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -24,8 +24,8 @@
            ========================================== */
         :root {
             --bg-color: #120606;
-            --card-bg: rgba(45, 20, 20, 0.45);
-            --card-border: rgba(229, 57, 53, 0.25);
+            --card-bg: rgba(45, 20, 20, 0.55);
+            --card-border: rgba(229, 57, 53, 0.3);
             --accent-red: #ff3344;
             --accent-crimson: #e53935;
             --accent-glow: rgba(255, 51, 68, 0.25);
@@ -33,7 +33,7 @@
             --text-muted: #a88c8c;
             --font-serif: 'Cormorant Garamond', serif;
             --font-sans: 'Montserrat', sans-serif;
-            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         * {
@@ -69,7 +69,7 @@
         }
 
         /* ==========================================
-           2. ШАПКА И ТИПОГРАФИКА
+           2. ШАПКА
            ========================================== */
         header {
             padding: 40px 20px 20px;
@@ -149,7 +149,7 @@
             background: var(--card-bg);
             border: 1px solid var(--card-border);
             border-radius: 24px;
-            padding: 40px 30px;
+            padding: 35px 25px;
             backdrop-filter: blur(16px);
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
             transition: var(--transition);
@@ -171,8 +171,8 @@
         }
 
         .option-btn {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 14px;
             padding: 18px 22px;
             color: var(--text-main);
@@ -184,24 +184,24 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            width: 100%;
         }
 
         .option-btn:hover {
-            background: rgba(255, 51, 68, 0.1);
-            border-color: rgba(255, 51, 68, 0.4);
-            transform: translateX(4px);
+            background: rgba(255, 51, 68, 0.12);
+            border-color: rgba(255, 51, 68, 0.5);
         }
 
         .option-btn.selected {
-            background: linear-gradient(135deg, rgba(229, 57, 53, 0.25), rgba(255, 51, 68, 0.15));
+            background: linear-gradient(135deg, rgba(229, 57, 53, 0.35), rgba(255, 51, 68, 0.2));
             border-color: var(--accent-red);
-            box-shadow: 0 0 20px rgba(255, 51, 68, 0.2);
+            box-shadow: 0 0 20px rgba(255, 51, 68, 0.25);
             font-weight: 500;
         }
 
         .option-radio {
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
             border: 2px solid var(--text-muted);
             transition: var(--transition);
@@ -223,7 +223,7 @@
         textarea {
             width: 100%;
             height: 160px;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.4);
             border: 1px solid var(--card-border);
             border-radius: 16px;
             padding: 18px;
@@ -249,6 +249,7 @@
             display: flex;
             justify-content: space-between;
             margin-top: 35px;
+            gap: 15px;
         }
 
         .btn-nav {
@@ -266,7 +267,6 @@
 
         .btn-nav:hover:not(:disabled) {
             background: rgba(255, 255, 255, 0.12);
-            transform: translateY(-2px);
         }
 
         .btn-nav:disabled {
@@ -284,7 +284,6 @@
 
         .btn-primary:hover:not(:disabled) {
             box-shadow: 0 12px 30px rgba(255, 51, 68, 0.5);
-            transform: translateY(-2px);
         }
 
         /* Экран результатов */
@@ -348,12 +347,6 @@
             color: #ff3344;
             display: block;
         }
-        .status-msg.error {
-            background: rgba(231, 76, 60, 0.15);
-            border: 1px solid rgba(231, 76, 60, 0.3);
-            color: #e74c3c;
-            display: block;
-        }
 
         /* Loader */
         .spinner {
@@ -396,7 +389,7 @@
         }
 
         @media (max-width: 600px) {
-            .quiz-card { padding: 25px 20px; }
+            .quiz-card { padding: 25px 18px; }
             .question-title { font-size: 1.4rem; }
             .option-btn { padding: 14px 16px; font-size: 0.95rem; }
             .controls { flex-direction: column-reverse; gap: 12px; }
@@ -438,9 +431,7 @@
             </div>
         </div>
 
-        <div id="quizContainer">
-            <!-- Динамическая генерация JS -->
-        </div>
+        <div id="quizContainer"></div>
     </main>
 
     <footer>
@@ -449,178 +440,177 @@
     </footer>
 
     <script>
-        const TELEGRAM_BOT_TOKEN = '8538283164:AAEjSnqdQMji9e03YVHjHL6Rqos-i7xKQGs';
-        const TELEGRAM_CHAT_ID = '5913842104';
+        document.addEventListener('DOMContentLoaded', function() {
+            const TELEGRAM_BOT_TOKEN = '8538283164:AAEjSnqdQMji9e03YVHjHL6Rqos-i7xKQGs';
+            const TELEGRAM_CHAT_ID = '5913842104';
 
-        const quizData = [
-            {
-                id: 1,
-                title: "1. Что делает меня по-настоящему счастливым?",
-                options: [
-                    "Когда мы вместе играем.",
-                    "Когда ты присылаешь мне кружочек с поцелуем.",
-                    "Когда ты говоришь мне комплименты.",
-                    "Когда мы долго разговариваем по звонку."
-                ],
-                correctIndex: 1
-            },
-            {
-                id: 2,
-                title: "🫶 2. Что я ценю в людях больше всего?",
-                options: [
-                    "Искренность.",
-                    "Доброту.",
-                    "Верность.",
-                    "Чувство юмора."
-                ],
-                correctIndex: 1
-            },
-            {
-                id: 3,
-                title: "🌙 3. Чего я боюсь сильнее всего?",
-                options: [
-                    "Потерять человека, которого люблю.",
-                    "Остаться совсем один.",
-                    "Быть преданным.",
-                    "Что меня перестанут любить."
-                ],
-                correctIndex: 1
-            },
-            {
-                id: 4,
-                title: "❤️ 4. Что сейчас является моей самой большой мечтой?",
-                options: [
-                    "Провести с тобой всё лето.",
-                    "Увидеться с тобой и крепко тебя обнять.",
-                    "Поехать вместе отдыхать.",
-                    "Никогда больше не расставаться."
-                ],
-                correctIndex: 1
-            },
-            {
-                id: 5,
-                title: "💔 5. Что может сильнее всего задеть мои чувства?",
-                options: [
-                    "Когда меня игнорируют.",
-                    "Когда человек играет моими чувствами.",
-                    "Когда мне долго не отвечают.",
-                    "Когда забывают обо мне."
-                ],
-                correctIndex: 1
-            },
-            {
-                id: 6,
-                title: "🎧 6. Что я чаще всего делаю, когда мне грустно?",
-                options: [
-                    "Смотрю фильмы.",
-                    "Играю.",
-                    "Остаюсь один.",
-                    "Ложусь спать."
-                ],
-                correctIndex: 2
-            },
-            {
-                id: 7,
-                title: "🎮 7. Какая из этих игр нравится мне больше всего?",
-                options: [
-                    "Roblox.",
-                    "Minecraft.",
-                    "Brawl Stars.",
-                    "Standoff 2."
-                ],
-                correctIndex: 1
-            },
-            {
-                id: 8,
-                title: "❤️ 8. Без чего я не представляю свой обычный день?",
-                options: [
-                    "Без музыки.",
-                    "Без твоих сообщений.",
-                    "Без игр.",
-                    "Без YouTube."
-                ],
-                correctIndex: 1
-            },
-            {
-                id: 9,
-                title: "🎨 9. Какой мой любимый цвет?",
-                options: [
-                    "Бордовый.",
-                    "Красный.",
-                    "Чёрный.",
-                    "Белый."
-                ],
-                correctIndex: 1
-            },
-            {
-                id: 10,
-                title: "💌 10. Какое сообщение от тебя делает меня счастливее всего?",
-                options: [
-                    "«Доброе утро».",
-                    "«Я люблю тебя».",
-                    "Твой кружочек.",
-                    "«Как дела?»"
-                ],
-                correctIndex: 2
-            },
-            {
-                id: 11,
-                title: "🥹 11. Какая моя привычка самая странная?",
-                options: [
-                    "Часто переслушивать одну песню.",
-                    "Много писать, когда тревожусь или боюсь потерять человека.",
-                    "Проверять телефон каждые пять минут.",
-                    "Засыпать под музыку."
-                ],
-                correctIndex: 1
-            },
-            {
-                id: 12,
-                title: "💗 12. Какое качество я считаю в себе самым сильным?",
-                options: [
-                    "Внимательность.",
-                    "Доброту.",
-                    "Терпение.",
-                    "Смелость."
-                ],
-                correctIndex: 2
-            },
-            {
-                id: 13,
-                title: "😊 13. Что, как мне кажется, больше всего нравится людям во мне?",
-                options: [
-                    "Моё чувство юмора.",
-                    "Моё спокойствие.",
-                    "Моя доброта.",
-                    "Моё упрямство."
-                ],
-                correctIndex: 2
-            },
-            {
-                id: 14,
-                title: "❤️ 14. Что я выберу, если придётся выбирать только одно?",
-                options: [
-                    "Новый телефон.",
-                    "Миллион тенге.",
-                    "Один день рядом с тобой.",
-                    "Вернуться к бывшей."
-                ],
-                correctIndex: 2
-            },
-            {
-                id: 15,
-                title: "🌹 15. Что я хочу, чтобы ты всегда помнила обо мне?",
-                options: [
-                    "Что я всегда буду рядом.",
-                    "Что я очень люблю играть.",
-                    "Что я люблю музыку.",
-                    "Что я люблю красный цвет.",
-                    "Что я ценю тебя."
-                ],
-                correctIndex: 0
-            },
-            {
-                id: 16,
-                title: "16. Последний вопрос ❤️",
-                isText: true,
-                textPrompt: "А теперь без вариантов ответа. ❤️\n\nНапиши, какие мои качества или поступки ты любишь больше всего. Что во мне заставляет тебя улыбаться, чувствовать себя любимой или просто делает меня особенным для тебя?\n\nМне очень хочется прочитать именно твои мысли. Не торопись, напиши так, 
+            const quizData = [
+                {
+                    id: 1,
+                    title: "1. Что делает меня по-настоящему счастливым?",
+                    options: [
+                        "Когда мы вместе играем.",
+                        "Когда ты присылаешь мне кружочек с поцелуем.",
+                        "Когда ты говоришь мне комплименты.",
+                        "Когда мы долго разговариваем по звонку."
+                    ],
+                    correctIndex: 1
+                },
+                {
+                    id: 2,
+                    title: "🫶 2. Что я ценю в людях больше всего?",
+                    options: [
+                        "Искренность.",
+                        "Доброту.",
+                        "Верность.",
+                        "Чувство юмора."
+                    ],
+                    correctIndex: 1
+                },
+                {
+                    id: 3,
+                    title: "🌙 3. Чего я боюсь сильнее всего?",
+                    options: [
+                        "Потерять человека, которого люблю.",
+                        "Остаться совсем один.",
+                        "Быть преданным.",
+                        "Что меня перестанут любить."
+                    ],
+                    correctIndex: 1
+                },
+                {
+                    id: 4,
+                    title: "❤️ 4. Что сейчас является моей самой большой мечтой?",
+                    options: [
+                        "Провести с тобой всё лето.",
+                        "Увидеться с тобой и крепко тебя обнять.",
+                        "Поехать вместе отдыхать.",
+                        "Никогда больше не расставаться."
+                    ],
+                    correctIndex: 1
+                },
+                {
+                    id: 5,
+                    title: "💔 5. Что может сильнее всего задеть мои чувства?",
+                    options: [
+                        "Когда меня игнорируют.",
+                        "Когда человек играет моими чувствами.",
+                        "Когда мне долго не отвечают.",
+                        "Когда забывают обо мне."
+                    ],
+                    correctIndex: 1
+                },
+                {
+                    id: 6,
+                    title: "🎧 6. Что я чаще всего делаю, когда мне грустно?",
+                    options: [
+                        "Смотрю фильмы.",
+                        "Играю.",
+                        "Остаюсь один.",
+                        "Ложусь спать."
+                    ],
+                    correctIndex: 2
+                },
+                {
+                    id: 7,
+                    title: "🎮 7. Какая из этих игр нравится мне больше всего?",
+                    options: [
+                        "Roblox.",
+                        "Minecraft.",
+                        "Brawl Stars.",
+                        "Standoff 2."
+                    ],
+                    correctIndex: 1
+                },
+                {
+                    id: 8,
+                    title: "❤️ 8. Без чего я не представляю свой обычный день?",
+                    options: [
+                        "Без музыки.",
+                        "Без твоих сообщений.",
+                        "Без игр.",
+                        "Без YouTube."
+                    ],
+                    correctIndex: 1
+                },
+                {
+                    id: 9,
+                    title: "🎨 9. Какой мой любимый цвет?",
+                    options: [
+                        "Бордовый.",
+                        "Красный.",
+                        "Чёрный.",
+                        "Белый."
+                    ],
+                    correctIndex: 1
+                },
+                {
+                    id: 10,
+                    title: "💌 10. Какое сообщение от тебя делает меня счастливее всего?",
+                    options: [
+                        "«Доброе утро».",
+                        "«Я люблю тебя».",
+                        "Твой кружочек.",
+                        "«Как дела?»"
+                    ],
+                    correctIndex: 2
+                },
+                {
+                    id: 11,
+                    title: "🥹 11. Какая моя привычка самая странная?",
+                    options: [
+                        "Часто переслушивать одну песню.",
+                        "Много писать, когда тревожусь или боюсь потерять человека.",
+                        "Проверять телефон каждые пять минут.",
+                        "Засыпать под музыку."
+                    ],
+                    correctIndex: 1
+                },
+                {
+                    id: 12,
+                    title: "💗 12. Какое качество я считаю в себе самым сильным?",
+                    options: [
+                        "Внимательность.",
+                        "Доброту.",
+                        "Терпение.",
+                        "Смелость."
+                    ],
+                    correctIndex: 2
+                },
+                {
+                    id: 13,
+                    title: "😊 13. Что, как мне кажется, больше всего нравится людям во мне?",
+                    options: [
+                        "Моё чувство юмора.",
+                        "Моё спокойствие.",
+                        "Моя доброта.",
+                        "Моё упрямство."
+                    ],
+                    correctIndex: 2
+                },
+                {
+                    id: 14,
+                    title: "❤️ 14. Что я выберу, если придётся выбирать только одно?",
+                    options: [
+                        "Новый телефон.",
+                        "Миллион тенге.",
+                        "Один день рядом с тобой.",
+                        "Вернуться к бывшей."
+                    ],
+                    correctIndex: 2
+                },
+                {
+                    id: 15,
+                    title: "🌹 15. Что я хочу, чтобы ты всегда помнила обо мне?",
+                    options: [
+                        "Что я всегда буду рядом.",
+                        "Что я очень люблю играть.",
+                        "Что я люблю музыку.",
+                        "Что я люблю красный цвет.",
+                        "Что я ценю тебя."
+                    ],
+                    correctIndex: 0
+                },
+                {
+                    id: 16,
+       
