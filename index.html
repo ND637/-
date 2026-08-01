@@ -19,21 +19,23 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* ==========================================
-           1. СБРОС И ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ (CRIMSON DARK)
-           ========================================== */
         :root {
             --bg-color: #120606;
             --card-bg: rgba(45, 20, 20, 0.55);
             --card-border: rgba(229, 57, 53, 0.3);
             --accent-red: #ff3344;
-            --accent-crimson: #e53935;
             --accent-glow: rgba(255, 51, 68, 0.25);
             --text-main: #f7f0f0;
             --text-muted: #a88c8c;
             --font-serif: 'Cormorant Garamond', serif;
             --font-sans: 'Montserrat', sans-serif;
             --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            
+            /* Цвета для подсветок */
+            --correct-bg: rgba(46, 125, 50, 0.35);
+            --correct-border: #4caf50;
+            --wrong-bg: rgba(211, 47, 47, 0.35);
+            --wrong-border: #f44336;
         }
 
         * {
@@ -54,7 +56,6 @@
             justify-content: space-between;
         }
 
-        /* Ambient Background Glow */
         .ambient-glow {
             position: fixed;
             top: 25%;
@@ -68,13 +69,9 @@
             filter: blur(90px);
         }
 
-        /* ==========================================
-           2. ШАПКА
-           ========================================== */
         header {
             padding: 40px 20px 20px;
             text-align: center;
-            position: relative;
         }
 
         header .subtitle {
@@ -105,9 +102,6 @@
             font-weight: 300;
         }
 
-        /* ==========================================
-           3. КОНТЕЙНЕР ВИКТОРИНЫ
-           ========================================== */
         main {
             max-width: 760px;
             width: 90%;
@@ -144,14 +138,13 @@
             font-weight: 500;
         }
 
-        /* Карточка вопроса */
         .quiz-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
             border-radius: 24px;
             padding: 35px 25px;
             backdrop-filter: blur(16px);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
             transition: var(--transition);
         }
 
@@ -187,16 +180,20 @@
             width: 100%;
         }
 
-        .option-btn:hover {
-            background: rgba(255, 51, 68, 0.12);
-            border-color: rgba(255, 51, 68, 0.5);
+        /* Стиль при правильном ответе */
+        .option-btn.correct {
+            background: var(--correct-bg) !important;
+            border-color: var(--correct-border) !important;
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.4);
+            color: #ffffff;
         }
 
-        .option-btn.selected {
-            background: linear-gradient(135deg, rgba(229, 57, 53, 0.35), rgba(255, 51, 68, 0.2));
-            border-color: var(--accent-red);
-            box-shadow: 0 0 20px rgba(255, 51, 68, 0.25);
-            font-weight: 500;
+        /* Стиль при неправильном ответе */
+        .option-btn.wrong {
+            background: var(--wrong-bg) !important;
+            border-color: var(--wrong-border) !important;
+            box-shadow: 0 0 15px rgba(244, 67, 54, 0.4);
+            color: #ffffff;
         }
 
         .option-radio {
@@ -209,15 +206,14 @@
             margin-left: 10px;
         }
 
-        .option-btn.selected .option-radio {
-            border-color: var(--accent-red);
-            background: var(--accent-red);
-            box-shadow: inset 0 0 0 3px #1d0b0b;
+        .option-btn.correct .option-radio {
+            border-color: var(--correct-border);
+            background: var(--correct-border);
         }
 
-        /* Текстовый ответ */
-        .text-answer-container {
-            margin-top: 15px;
+        .option-btn.wrong .option-radio {
+            border-color: var(--wrong-border);
+            background: var(--wrong-border);
         }
 
         textarea {
@@ -232,7 +228,6 @@
             font-size: 1rem;
             resize: vertical;
             outline: none;
-            transition: var(--transition);
         }
 
         textarea:focus {
@@ -240,11 +235,6 @@
             box-shadow: 0 0 20px var(--accent-glow);
         }
 
-        textarea::placeholder {
-            color: rgba(168, 140, 140, 0.5);
-        }
-
-        /* Кнопки навигации */
         .controls {
             display: flex;
             justify-content: space-between;
@@ -265,15 +255,6 @@
             transition: var(--transition);
         }
 
-        .btn-nav:hover:not(:disabled) {
-            background: rgba(255, 255, 255, 0.12);
-        }
-
-        .btn-nav:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-
         .btn-primary {
             background: linear-gradient(135deg, #e53935, #ff3344);
             border: none;
@@ -282,92 +263,6 @@
             box-shadow: 0 8px 25px rgba(255, 51, 68, 0.3);
         }
 
-        .btn-primary:hover:not(:disabled) {
-            box-shadow: 0 12px 30px rgba(255, 51, 68, 0.5);
-        }
-
-        /* Экран результатов */
-        .results-card {
-            text-align: center;
-            padding: 50px 30px;
-        }
-
-        .score-circle {
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(255, 51, 68, 0.2) 0%, rgba(0,0,0,0) 70%);
-            border: 3px solid var(--accent-red);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            margin: 0 auto 30px;
-            box-shadow: 0 0 30px var(--accent-glow);
-        }
-
-        .score-num {
-            font-family: var(--font-serif);
-            font-size: 3rem;
-            font-weight: 600;
-            line-height: 1;
-            color: var(--accent-red);
-        }
-
-        .score-label {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-top: 5px;
-        }
-
-        .results-title {
-            font-family: var(--font-serif);
-            font-size: 2.2rem;
-            margin-bottom: 15px;
-        }
-
-        .results-desc {
-            color: var(--text-muted);
-            max-width: 500px;
-            margin: 0 auto 30px;
-        }
-
-        .status-msg {
-            padding: 15px;
-            border-radius: 12px;
-            margin-top: 20px;
-            font-size: 0.95rem;
-            display: none;
-        }
-        .status-msg.success {
-            background: rgba(255, 51, 68, 0.15);
-            border: 1px solid rgba(255, 51, 68, 0.3);
-            color: #ff3344;
-            display: block;
-        }
-
-        /* Loader */
-        .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: #ffffff;
-            animation: spin 0.8s ease-in-out infinite;
-            margin-left: 10px;
-            vertical-align: middle;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* ==========================================
-           4. FOOTER
-           ========================================== */
         footer {
             text-align: center;
             padding: 40px 20px;
@@ -380,7 +275,6 @@
             font-size: 1.8rem;
             font-weight: 400;
             margin-bottom: 8px;
-            color: #ffffff;
         }
 
         footer p {
@@ -391,7 +285,6 @@
         @media (max-width: 600px) {
             .quiz-card { padding: 25px 18px; }
             .question-title { font-size: 1.4rem; }
-            .option-btn { padding: 14px 16px; font-size: 0.95rem; }
             .controls { flex-direction: column-reverse; gap: 12px; }
             .btn-nav { width: 100%; text-align: center; }
         }
@@ -407,10 +300,8 @@
     </script>
 </head>
 <body>
-    <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P3PNZKS4"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
 
     <div class="ambient-glow"></div>
 
@@ -476,7 +367,7 @@
                         "Быть преданным.",
                         "Что меня перестанут любить."
                     ],
-                    correctIndex: 1
+                    correctIndex: 0
                 },
                 {
                     id: 4,
@@ -613,4 +504,67 @@
                 },
                 {
                     id: 16,
-       
+                    title: "16. Последний вопрос ❤️",
+                    isText: true,
+                    textPrompt: "А теперь без вариантов ответа. ❤️\n\nНапиши, какие мои качества или поступки ты любишь больше всего. Что во мне заставляет тебя улыбаться, чувствовать себя любимой или просто делает меня особенным для тебя?\n\nМне очень хочется прочитать именно твои мысли. Не торопись, напиши так, как чувствуешь. 💗"
+                }
+            ];
+
+            let currentQuestion = 0;
+            const userAnswers = {};
+            let isAnsweredCurrent = false;
+
+            const quizContainer = document.getElementById('quizContainer');
+            const progressBar = document.getElementById('progressBar');
+            const questionCounter = document.getElementById('questionCounter');
+            const progressPercent = document.getElementById('progressPercent');
+
+            function updateProgress() {
+                const total = quizData.length;
+                const current = currentQuestion + 1;
+                const percentage = Math.round((current / total) * 100);
+                
+                if (progressBar) progressBar.style.width = `${percentage}%`;
+                if (questionCounter) questionCounter.innerText = `Вопрос ${current} из ${total}`;
+                if (progressPercent) progressPercent.innerText = `${percentage}%`;
+            }
+
+            function renderQuestion() {
+                updateProgress();
+                isAnsweredCurrent = false;
+                const q = quizData[currentQuestion];
+
+                let html = `<div class="quiz-card">`;
+                html += `<h2 class="question-title">${q.title}</h2>`;
+
+                if (q.isText) {
+                    const prevVal = userAnswers[q.id] || '';
+                    html += `
+                        <div class="text-answer-container">
+                            <p style="color: var(--text-muted); margin-bottom: 15px; white-space: pre-line;">${q.textPrompt}</p>
+                            <textarea id="textAnswer" placeholder="Напиши всё, что думаешь...">${prevVal}</textarea>
+                        </div>
+                    `;
+                } else {
+                    html += `<div class="options-grid">`;
+                    q.options.forEach((opt, idx) => {
+                        let extraClass = '';
+                        // Если уже отвечали ранее на этот вопрос
+                        if (userAnswers[q.id] !== undefined) {
+                            if (idx === q.correctIndex) extraClass = 'correct';
+                            else if (idx === userAnswers[q.id]) extraClass = 'wrong';
+                        }
+
+                        html += `
+                            <button class="option-btn ${extraClass}" data-idx="${idx}">
+                                <span>${opt}</span>
+                                <div class="option-radio"></div>
+                            </button>
+                        `;
+                    });
+                    html += `</div>`;
+                }
+
+                html += `<div class="controls">`;
+                if (currentQuestion > 0) {
+                    html += `<button class="btn-nav" id
