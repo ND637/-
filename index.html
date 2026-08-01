@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-P3PNZKS4');</script>
+    <!-- End Google Tag Manager -->
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glow & Memories | Emerald Quiz</title>
+    
+    <!-- Google Fonts: Премиальная типографика -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ==========================================
+           1. СБРОС И ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ (EMERALD DARK)
+           ========================================== */
+        :root {
+            --bg-color: #06120e;
+            --card-bg: rgba(20, 45, 35, 0.4);
+            --card-border: rgba(46, 204, 113, 0.15);
+            --accent-green: #2ecc71;
+            --accent-emerald: #10b981;
+            --accent-glow: rgba(46, 204, 113, 0.2);
+            --accent-gold: #f39c12;
+            --text-main: #f0f7f4;
+            --text-muted: #8ca89e;
+            --font-serif: 'Cormorant Garamond', serif;
+            --font-sans: 'Montserrat', sans-serif;
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            overflow-x: hidden;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Ambient Background Glow */
+        .ambient-glow {
+            position: fixed;
+            top: 25%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 650px;
+            height: 650px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, rgba(0,0,0,0) 70%);
+            z-index: -1;
+            pointer-events: none;
+            filter: blur(90px);
+        }
+
+        /* ==========================================
+           2. ШАПКА И ТИПОГРАФИКА
+           ========================================== */
+        header {
+            padding: 40px 20px 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        header .subtitle {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            color: var(--accent-green);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        header h1 {
+            font-family: var(--font-serif);
+            font-size: clamp(2.2rem, 5vw, 4rem);
+            font-weight: 400;
+            line-height: 1.1;
+            background: linear-gradient(180deg, #ffffff 30%, #a3d9c9 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+
+        header p {
+            max-width: 580px;
+            margin: 0 auto;
+            color: var(--text-muted);
+            font-size: 1rem;
+            font-weight: 300;
+        }
+
+        /* ==========================================
+           3. КОНТЕЙНЕР ВИКТОРИНОЙ
+           ========================================== */
+        main {
+            max-width: 760px;
+            width: 90%;
+            margin: 20px auto 60px;
+            flex-grow: 1;
+        }
+
+        .progress-container {
+            margin-bottom: 30px;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #10b981, #2ecc71);
+            border-radius: 10px;
+            transition: width 0.4s ease;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        /* Карточка вопроса */
+        .quiz-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 40px 30px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+        }
+
+        .question-title {
+            font-family: var(--font-serif);
+            font-size: 1.8rem;
+            font-weight: 400;
+            margin-bottom: 25px;
+            color: #ffffff;
+            line-height: 1.35;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 18px 22px;
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            font-size: 1rem;
+            text-align: left;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .option-btn:hover {
+            background: rgba(46, 204, 113, 0.1);
+            border-color: rgba(46, 204, 113, 0.4);
+            transform: translateX(4px);
+        }
+
+        .option-btn.selected {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(46, 204, 113, 0.15));
+            border-color: var(--accent-green);
+            box-shadow: 0 0 20px rgba(46, 204, 113, 0.2);
+            font-weight: 500;
+        }
+
+        .option-radio {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .option-btn.selected .option-radio {
+            border-color: var(--accent-green);
+            background: var(--accent-green);
+            box-shadow: inset 0 0 0 3px #0b1d15;
+        }
+
+        /* Текстовый ответ */
+        .text-answer-container {
+            margin-top: 15px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 160px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 18px;
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            font-size: 1rem;
+            resize: vertical;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        textarea:focus {
+            border-color: var(--accent-green);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        textarea::placeholder {
+            color: rgba(140, 168, 158, 0.5);
+        }
+
+        /* Кнопки навигации */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 35px;
+        }
+
+        .btn-nav {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            padding: 14px 28px;
+            border-radius: 30px;
+            font-family: var(--font-sans);
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-nav:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .btn-nav:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981, #2ecc71);
+            border: none;
+            color: #04140d;
+            font-weight: 600;
+            box-shadow: 0 8px 25px rgba(46, 204, 113, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            box-shadow: 0 12px 30px rgba(46, 204, 113, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* Экран результатов */
+        .results-card {
+            text-align: center;
+            padding: 50px 30px;
+        }
+
+        .score-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(46, 204, 113, 0.2) 0%, rgba(0,0,0,0) 70%);
+            border: 3px solid var(--accent-green);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 30px;
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        .score-num {
+            font-family: var(--font-serif);
+            font-size: 3rem;
+            font-weight: 600;
+            line-height: 1;
+            color: var(--accent-green);
+        }
+
+        .score-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 5px;
+        }
+
+        .results-title {
+            font-family: var(--font-serif);
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+        }
+
+        .results-desc {
+            color: var(--text-muted);
+            max-width: 500px;
+            margin: 0 auto 30px;
+        }
+
+        .status-msg {
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
+            font-size: 0.95rem;
+            display: none;
+        }
+        .status-msg.success {
+            background: rgba(46, 204, 113, 0.15);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            color: #2ecc71;
+            display: block;
+        }
+        .status-msg.error {
+            background: rgba(231, 76, 60, 0.15);
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            color: #e74c3c;
+            display: block;
+        }
+
+        /* Loader */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,0,0,0.2);
+            border-radius: 50%;
+            border-top-color: #04140d;
+            animation: spin 0.8s ease-in-out infinite;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ==========================================
+           4. FOOTER
+           ========================================== */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid var(--card-border);
+            margin-top: 40px;
+        }
+
+        footer h3 {
+            font-family: var(--font-serif);
+            font-size: 1.8rem;
+            font-weight: 400;
+            margin-bottom: 8px;
+            color: #ffffff;
+        }
+
+        footer p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 600px) {
+            .quiz-card { padding: 25px 20px; }
+            .question-title { font-size: 1.4rem; }
+            .option-btn { padding: 14px 16px; font-size: 0.95rem; }
+            .controls { flex-direction: column-reverse; gap: 12px; }
+            .btn-nav { width: 100%; text-align: center; }
+        }
+    </style>
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-613LBYDMD2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-613LBYDMD2');
+    </script>
+</head>
+<body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P3PNZKS4"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <div class="ambient-glow"></div>
+
+    <header>
+        <div class="subtitle">Private Quiz Collection</div>
+        <h1>Насколько хорошо ты меня знаешь?</h1>
+        <p>Ответь на эти вопросы от всего сердца. В конце я смогу прочитать твои ответы!</p>
+    </header>
+
+    <main>
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progressBar"></div>
+            </div>
+            <div class="progress-text">
+                <span id="questionCounter">Вопрос 1 из 16</span>
+                <span id="progressPercent">6%</span>
+            </div>
+        </div>
+
+        <div id="quizContainer">
+            <!-- Вопрос генерируется через JS -->
+        </div>
+    </main>
+
+    <footer>
+        <h3>Forever & Always</h3>
+        <p>Специально создано, чтобы сохранить наши самые ценные моменты.</p>
+    </footer>
+
+    <script>
+        /* Telegram Bot Config */
+        const TELEGRAM_BOT_TOKEN = '8538283164:AAEjSnqdQMji9e03YVHjHL6Rqos-i7xKQGs';
+        const TELEGRAM_CHAT_ID = '5913842104';
+
+        /* Вопросы викторины */
+        const quizData = [
+            {
+                id: 1,
+                title: "1. Что делает меня по-настоящему счастливым?",
+                options: [
+                    "Когда мы вместе играем.",
+                    "Когда ты присылаешь мне кружочек с поцелуем.",
+                    "Когда ты говоришь мне комплименты.",
+                    "Когда мы долго разговариваем по звонку."
+                ],
+                correctIndex: 1
+            },
+            {
+                id: 2,
+                title: "🫶 2. Что я ценю в людях больше всего?",
+                options: [
+                    "Искренность.",
+                    "Доброту.",
+                    "Верность.",
+                    "Чувство юмора."
+                ],
+                correctIndex: 1
+            },
+            {
+                id: 3,
+                title: "🌙 3. Чего я боюсь сильнее всего?",
+                options: [
+                    "Потерять человека, которого люблю.",
+                    "Остаться совсем один.",
+                    "Быть преданным.",
+                    "Что меня перестанут любить."
+                ],
+                correctIndex: 1
+            },
+            {
+                id: 4,
+                title: "❤️ 4. Что сейчас является моей самой большой мечтой?",
+                options: [
+                    "Провести с тобой всё лето.",
+                    "Увидеться с тобой и крепко тебя обнять.",
+                    "Поехать вместе отдыхать.",
+                    "Никогда больше не расставаться."
+                ],
+                correctIndex: 1
+            },
+            {
+                id: 5,
+                title: "💔 5. Что может сильнее всего задеть мои чувства?",
+                options: [
+                    "Когда меня игнорируют.",
+                    "Когда человек играет моими чувствами.",
+                    "Когда мне долго не отвечают.",
+                    "Когда забывают обо мне."
+                ],
+                correctIndex: 1
+            },
+            {
+                id: 6,
+                title: "🎧 6. Что я чаще всего делаю, когда мне грустно?",
+                options: [
+                    "Смотрю фильмы.",
+                    "Играю.",
+                    "Остаюсь один.",
+                    "Ложусь спать."
+                ],
+                correctIndex: 2
+            },
+            {
+                id: 7,
+                title: "🎮 7. Какая из этих игр нравится мне больше всего?",
+                options: [
+                    "Roblox.",
+                    "Minecraft.",
+                    "Brawl Stars.",
+                    "Standoff 2."
+                ],
+                correctIndex: 1
+            },
+            {
+                id: 8,
+                title: "❤️ 8. Без чего я не представляю свой обычный день?",
+                options: [
+                    "Без музыки.",
+                    "Без твоих сообщений.",
+                    "Без игр.",
+                    "Без YouTube."
+                ],
+                correctIndex: 1
+            },
+            {
+                id: 9,
+                title: "🎨 9. Какой мой любимый цвет?",
+                options: [
+                    "Бордовый.",
+                    "Красный.",
+                    "Чёрный.",
+                    "Белый."
+                ],
+                correctIndex: 1
+            },
+            {
+                id: 10,
+                title: "💌 10. Какое сообщение от тебя делает меня счастливее всего?",
+                options: [
+                    "«Доброе утро».",
+                    "«Я люблю тебя».",
+                    "Твой кружочек.",
+                    "«Как дела?»"
+                ],
+                correctIndex: 2
+            },
+            {
+                id: 11,
+                title: "🥹 11. Какая моя привычка самая странная?",
+                options: [
+                    "Часто переслушивать одну песню.",
+                    "Много писать, когда тревожусь или боюсь потерять человека.",
+                    "Проверять телефон каждые пять минут.",
+                    "Засыпать под музыку."
+                ],
+                correctIndex: 1
+            },
+            {
+                id: 12,
+                title: "💗 12. Какое качество я считаю в себе самым сильным?",
+                options: [
+                    "Внимательность.",
+                    "Доброту.",
+                    "Терпение.",
+                    "Смелость."
+                ],
+                correctIndex: 2
+            },
+            {
+                id: 13,
+                title: "😊 13. Что, как мне кажется, больше всего нравится людям во мне?",
+                options: [
+                    "Моё чувство юмора.",
+                    "Моё спокойствие.",
+                    "Моя доброта.",
+                    "Моё упрямство."
+                ],
+                correctIndex: 2
+            },
+            {
+                id: 14,
+                title: "❤️ 14. Что я выберу, если придётся выбирать только одно?",
+                options: [
+                    "Новый телефон.",
+                    "Миллион тенге.",
+                    "Один день рядом с тобой.",
+                    "Вернуться к бывшей."
+                ],
+                correctIndex: 2
+            },
+            {
+                id: 15,
+                title: "🌹 15. Что я хочу, чтобы ты всегда помнила обо мне?",
+                options: [
+                    "Что я всегда буду рядом.",
+                    "Что я очень люблю играть.",
+                    "Что я люблю музыку.",
+                    "Что я люблю красный цвет.",
+                    "Что я ценю тебя."
+                ],
+                correctIndex: 0
+            },
+            {
+                id: 16,
+                title: "16. Последний вопрос ❤️",
+                subtitle: "А теперь без вариантов ответа.
+
+Напиши, какие мои качества или поступки ты любишь больше всего. Что во мне заставляет тебя улыбаться, чувствовать себя любимой или просто делает меня особенным для тебя?
+
+Мне очень хочется прочитать именно твои мысли. Не торопись, напиши так, как чувствуешь. 💗",
+                isText: true
+            }
+        ];
+
+        let currentQuestion = 0;
+        let userAnswers = {};
+
+        const quizContainer = document.getElementById('quizContainer');
+        const progressBar = document.getElementById('progressBar');
+        const questionCounter = document.getElementById('questionCounter');
+        const progressPercent = document.getElementById('progressPercent');
+
+        function renderQuestion() {
+            const data = quizData[currentQuestion];
+            const total = quizData.length;
+            
+            // Обновляем прогресс-бар
+            const percent = Math.round(((currentQuestion + 1) / total) * 100);
+            progressBar.style.width = `${percent}%`;
+            questionCounter.innerText = `Вопрос ${currentQuestion + 1} из ${total}`;
+            progressPercent.innerText = `${percent}%`;
+
+            let html = `<div class="quiz-card">`;
+            html += `<h2 class="question-title">${data.title}</h2>`;
+
+            if (data.isText) {
+                const lines = data.subtitle.split('
+
+');
+                lines.forEach(p => {
+                    html += `<p style="color: var(--text-muted); margin-bottom: 15px; font-size: 1.05rem;">${p}</p>`;
+                });
+                const savedText = userAnswers[data.id] || '';
+                html += `
+                    <div class="text-answer-container">
+                        <textarea id="textResponse" placeholder="Напиши всё, что у тебя на душе...">${savedText}</textarea>
+                    </div>
+                `;
+            } else {
+                html += `<div class="options-grid">`;
+                data.options.forEach((opt, idx) => {
+                    const isSelected = userAnswers[data.id] === idx;
+                    html += `
+                        <div class="option-btn ${isSelected ? 'selected' : ''}" onclick="selectOption(${data.id}, ${idx})">
+                            <span>${opt}</span>
+                            <div class="option-radio"></div>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            }
+
+            // Навигационные кнопки
+            html += `<div class="controls">`;
+            if (currentQuestion > 0) {
+                html += `<button class="btn-nav" onclick="prevQuestion()">Назад</button>`;
+            } else {
+                html += `<div></div>`;
+            }
+
+            if (currentQuestion === total - 1) {
+                html += `<button class="btn-nav btn-primary" onclick="submitQuiz()" id="submitBtn">Завершить и отправить 💌</button>`;
+            } else {
+                const canNext = userAnswers[data.id] !== undefined;
+                html += `<button class="btn-nav btn-primary" onclick="nextQuestion()" ${canNext ? '' : 'disabled'} id="nextBtn">Далее</button>`;
+            }
+            html += `</div></div>`;
+
+            quizContainer.innerHTML = html;
+
+            if (data.isText) {
+                const textarea = document.getElementById('textResponse');
+                textarea.addEventListener('input', (e) => {
+                    userAnswers[data.id] = e.target.value;
+                });
+            }
+        }
+
+        function selectOption(questionId, optionIndex) {
+            userAnswers[questionId] = optionIndex;
+            renderQuestion();
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < quizData.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
+
+        async function submitQuiz() {
+            const submitBtn = document.getElementById('submitBtn');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = 'Отправка... <span class="spinner"></span>';
+            }
+
+            // Подсчет правильных ответов по первым 15 вопросам
+            let score = 0;
+            let totalMultipleChoice = 15;
+            let resultDetails = "";
+
+            for (let i = 0; i < totalMultipleChoice; i++) {
+                const item = quizData[i];
+                const selected = userAnswers[item.id];
+                const isCorrect = selected === item.correctIndex;
+                if (isCorrect) score++;
+
+                const selectedText = selected !== undefined ? item.options[selected] : "Не отвечено";
+                const icon = isCorrect ? "✅" : "❌";
+                resultDetails += `${i + 1}. ${item.title.split('. ')[1] || item.title}
+   Ответ: ${selectedText} ${icon}
+`;
+            }
+
+            const openTextAnswer = userAnswers[16] || "(Ничего не написано)";
+
+            // Формирование сообщения для Telegram
+            const tgMessage = `💌 <b>НОВЫЙ ОТВЕТ НА ВИКТОРИНУ!</b> 💌
+
+` +
+                `📊 <b>Результат:</b> ${score} из ${totalMultipleChoice} правильных ответов!
+
+` +
+                `📝 <b>Детали ответов:</b>
+${resultDetails}
+` +
+                `💭 <b>16. Откровение (Личный ответ):</b>
+«${openTextAnswer}»`;
+
+            // Отправка в Telegram API
+            let sendSuccess = false;
+            try {
+                const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CHAT_ID,
+                        text: tgMessage,
+                        parse_mode: 'HTML'
+                    })
+                });
+                const resData = await response.json();
+                sendSuccess = resData.ok;
+            } catch (err) {
+                console.error("Ошибка отправки в Telegram:", err);
+                sendSuccess = false;
+            }
+
+            // Отрисовка результатов
+            document.getElementById('progressContainer').style.display = 'none';
+            
+            let statusText = sendSuccess 
+                ? `<div class="status-msg success">✨ Все твои ответы успешно отправлены! Спасибо тебе за твои искренние слова! ❤️</div>`
+                : `<div class="status-msg error">⚠️ Ошибка отправки в Telegram. Отправь скриншот этой страницы!</div>`;
+
+            quizContainer.innerHTML = `
+                <div class="quiz-card results-card">
+                    <div class="score-circle">
+                        <div class="score-num">${score}/${totalMultipleChoice}</div>
+                        <div class="score-label">Результат</div>
+                    </div>
+                    <h2 class="results-title">Спасибо за прохождение!</h2>
+                    <p class="results-desc">Ты ответила правильно на <b>${score}</b> из <b>${totalMultipleChoice}</b> вопросов. Твои мысли и искренние ответы делают этот день особенным! 💖</p>
+                    ${statusText}
+                </div>
+            `;
+        }
+
+        // Инициализация первого вопроса при загрузке
+        renderQuestion();
+    </script>
+</body>
+</html>
