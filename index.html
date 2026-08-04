@@ -152,9 +152,6 @@
             cursor: pointer;
             transition: all 0.2s ease;
             width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
         .option-btn:active {
@@ -456,7 +453,7 @@
             },
             {
                 id: 18,
-                title: "18. Опиши меня так, как будто рассказываешь о самом дорогом человеком в своей жизни.",
+                title: "18. Опиши меня так, как будто рассказываешь о самом дорогом человеке в своей жизни.",
                 isText: true,
                 prompt: "Напиши своими словами от всего сердца 💗"
             },
@@ -516,7 +513,7 @@
             const container = document.getElementById('quizContainer');
             const q = questions[currentIndex];
 
-            // Прогресс
+            // Обновляем прогресс
             const total = questions.length;
             const pct = Math.round(((currentIndex + 1) / total) * 100);
             document.getElementById('progressBar').style.width = pct + '%';
@@ -535,18 +532,21 @@
             } else {
                 html += `<div class="options-grid">`;
                 q.options.forEach((opt, idx) => {
-                    html += `<button class="option-btn" onclick="selectOption(${idx})"><span>${opt}</span></button>`;
+                    html += `<button class="option-btn" onclick="selectOption(${idx})">${opt}</button>`;
                 });
                 html += `</div>`;
             }
 
             html += `<div class="controls">`;
+            
+            // Кнопка НАЗАД
             if (currentIndex > 0) {
                 html += `<button class="btn-nav" onclick="prevQ()">Назад</button>`;
             } else {
                 html += `<div></div>`;
             }
 
+            // Кнопка ДАЛЕЕ / ОТПРАВИТЬ
             if (currentIndex === total - 1) {
                 html += `<button class="btn-nav btn-primary" onclick="sendResult()">Отправить ❤️</button>`;
             } else if (q.isText) {
@@ -605,18 +605,70 @@
 
         function prevQ() {
             if (currentIndex > 0) {
-                // Очищаем ответ на текущий и предыдущий вопрос при переходе назад, чтобы перепройти честно
-                const currentQ = questions[currentIndex];
-                delete answers[currentQ.id];
-                
+                // Очищаем ответ текущего и предыдущего вопроса при шаге назад
+                delete answers[questions[currentIndex].id];
                 currentIndex--;
-                
-                const prevQ = questions[currentIndex];
-                delete answers[prevQ.id];
-
+                delete answers[questions[currentIndex].id];
                 render();
             }
         }
 
         async function sendResult() {
-            const lastQ = questions[questions.length -
+            const lastQ = questions[questions.length - 1];
+            if (lastQ.isText && (!answers[lastQ.id] || !answers[lastQ.id].trim())) {
+                alert('Пожалуйста, напиши ответ на последний вопрос!');
+                return;
+            }
+
+            let score = 0;
+            let totalMC = 0;
+
+            questions.forEach(q => {
+                if (!q.isText) {
+                    totalMC++;
+                    if (answers[q.id] === q.correct) score++;
+                }
+            });
+
+            let msg = `<b>💌 НОВЫЙ ОТВЕТ НА ВИКТОРИНУ!</b>\n\n`;
+            msg += `<b>📊 Результат:</b> ${score} из ${totalMC}\n`;
+            msg += `-----------------------------------\n\n`;
+
+            questions.forEach(q => {
+                if (q.isText) {
+                    msg += `<b>${q.title}</b>\n<i>"${answers[q.id] || 'Пусто'}"</i>\n\n`;
+                } else {
+                    const ansText = answers[q.id] !== undefined ? q.options[answers[q.id]] : 'Не ответила';
+                    const mark = answers[q.id] === q.correct ? '✅' : '❌';
+                    msg += `<b>${q.title}</b>\nОтвет: ${ansText} ${mark}\n\n`;
+                }
+            });
+
+            document.getElementById('quizContainer').innerHTML = `<div class="quiz-card" style="text-align:center;"><h3>Отправка...</h3></div>`;
+
+            try {
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: 'HTML' })
+                });
+            } catch (e) {
+                console.error(e);
+            }
+
+            document.getElementById('progressBox').style.display = 'none';
+            document.getElementById('quizContainer').innerHTML = `
+                <div class="quiz-card" style="text-align: center; padding: 40px 20px;">
+                    <h2 style="font-family: var(--font-serif); font-size: 2rem; margin-bottom: 10px;">Спасибо за ответы! ❤️</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 20px;">Я уже всё получил и с удовольствием прочитал! Ты угадала <b>${score} из ${totalMC}</b> вопросов с вариантами ответов.</p>
+                    <div style="background: rgba(255, 51, 68, 0.15); color: #ff3344; padding: 12px; border-radius: 10px; font-size: 0.9rem;">
+                        Ответы успешно доставлены 💌
+                    </div>
+                </div>
+            `;
+        }
+
+        render();
+    </script>
+</body>
+</html>
