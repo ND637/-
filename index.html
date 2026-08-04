@@ -509,6 +509,15 @@
         const answers = {};
         let canSelect = true;
 
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+        }
+
         function render() {
             canSelect = true;
             const container = document.getElementById('quizContainer');
@@ -606,42 +615,68 @@
                 }
             });
 
-            let msg = `<b>💌 НОВЫЙ ОТВЕТ НА ВИКТОРИНУ!</b>\n\n`;
-            msg += `<b>📊 Результат (выбор):</b> ${score} из ${totalMC}\n`;
-            msg += `-----------------------------------\n\n`;
+            let header = `<b>💌 НОВЫЙ ОТВЕТ НА ВИКТОРИНУ!</b>\n\n`;
+            header += `<b>📊 Результат:</b> ${score} из ${totalMC}\n`;
+            header += `-----------------------------------\n\n`;
+
+            let messages = [];
+            let currentMsg = header;
 
             questions.forEach(q => {
+                let block = '';
                 if (q.isText) {
-                    msg += `<b>${q.title}</b>\n<i>"${answers[q.id] || 'Пусто'}"</i>\n\n`;
+                    const userText = escapeHTML(answers[q.id] || 'Пусто');
+                    block = `<b>${escapeHTML(q.title)}</b>\n<i>"${userText}"</i>\n\n`;
                 } else {
                     const ansText = answers[q.id] !== undefined ? q.options[answers[q.id]] : 'Не ответила';
                     const mark = answers[q.id] === q.correct ? '✅' : '❌';
-                    msg += `<b>${q.title}</b>\nОтвет: ${ansText} ${mark}\n\n`;
+                    block = `<b>${escapeHTML(q.title)}</b>\nОтвет: ${escapeHTML(ansText)} ${mark}\n\n`;
+                }
+
+                if ((currentMsg + block).length > 3500) {
+                    messages.push(currentMsg);
+                    currentMsg = block;
+                } else {
+                    currentMsg += block;
                 }
             });
+            if (currentMsg) messages.push(currentMsg);
 
             document.getElementById('quizContainer').innerHTML = `<div class="quiz-card" style="text-align:center;"><h3>Отправка...</h3></div>`;
 
             try {
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: 'HTML' })
-                });
+                for (const msgText of messages) {
+                    const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ chat_id: CHAT_ID, text: msgText, parse_mode: 'HTML' })
+                    });
+
+                    if (!res.ok) {
+                        throw new Error(`Ошибка Telegram: ${res.status}`);
+                    }
+                }
+
+                document.getElementById('progressBox').style.display = 'none';
+                document.getElementById('quizContainer').innerHTML = `
+                    <div class="quiz-card" style="text-align: center; padding: 40px 20px;">
+                        <h2 style="font-family: var(--font-serif); font-size: 2rem; margin-bottom: 10px;">Спасибо за ответы! ❤️</h2>
+                        <p style="color: var(--text-muted); margin-bottom: 20px;">Я уже всё получил с угаданными <b>${score} из ${totalMC}</b> вопросов!</p>
+                        <div style="background: rgba(255, 51, 68, 0.15); color: #ff3344; padding: 12px; border-radius: 10px; font-size: 0.9rem;">
+                            Ответы успешно доставлены 💌
+                        </div>
+                    </div>
+                `;
             } catch (e) {
                 console.error(e);
-            }
-
-            document.getElementById('progressBox').style.display = 'none';
-            document.getElementById('quizContainer').innerHTML = `
-                <div class="quiz-card" style="text-align: center; padding: 40px 20px;">
-                    <h2 style="font-family: var(--font-serif); font-size: 2rem; margin-bottom: 10px;">Спасибо за ответы! ❤️</h2>
-                    <p style="color: var(--text-muted); margin-bottom: 20px;">Я уже всё получил с угаданными <b>${score} из ${totalMC}</b> вопросов!</p>
-                    <div style="background: rgba(255, 51, 68, 0.15); color: #ff3344; padding: 12px; border-radius: 10px; font-size: 0.9rem;">
-                        Ответы успешно доставлены 💌
+                document.getElementById('quizContainer').innerHTML = `
+                    <div class="quiz-card" style="text-align:center;">
+                        <h3>Ошибка отправки 💔</h3>
+                        <p style="margin: 15px 0; color: var(--text-muted);">Произошел сбой. Попробуй еще раз!</p>
+                        <button class="btn-nav btn-primary" onclick="sendResult()">Повторить отправку</button>
                     </div>
-                </div>
-            `;
+                `;
+            }
         }
 
         render();
