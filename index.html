@@ -152,6 +152,9 @@
             cursor: pointer;
             transition: all 0.2s ease;
             width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .option-btn:active {
@@ -453,7 +456,7 @@
             },
             {
                 id: 18,
-                title: "18. Опиши меня так, как будто рассказываешь о самом дорогом человеке в своей жизни.",
+                title: "18. Опиши меня так, как будто рассказываешь о самом дорогом человеком в своей жизни.",
                 isText: true,
                 prompt: "Напиши своими словами от всего сердца 💗"
             },
@@ -513,7 +516,7 @@
             const container = document.getElementById('quizContainer');
             const q = questions[currentIndex];
 
-            // Обновляем прогресс
+            // Прогресс
             const total = questions.length;
             const pct = Math.round(((currentIndex + 1) / total) * 100);
             document.getElementById('progressBar').style.width = pct + '%';
@@ -532,21 +535,18 @@
             } else {
                 html += `<div class="options-grid">`;
                 q.options.forEach((opt, idx) => {
-                    html += `<button class="option-btn" onclick="selectOption(${idx})">${opt}</button>`;
+                    html += `<button class="option-btn" onclick="selectOption(${idx})"><span>${opt}</span></button>`;
                 });
                 html += `</div>`;
             }
 
             html += `<div class="controls">`;
-            
-            // Кнопка НАЗАД
             if (currentIndex > 0) {
                 html += `<button class="btn-nav" onclick="prevQ()">Назад</button>`;
             } else {
                 html += `<div></div>`;
             }
 
-            // Кнопка ДАЛЕЕ / ОТПРАВИТЬ
             if (currentIndex === total - 1) {
                 html += `<button class="btn-nav btn-primary" onclick="sendResult()">Отправить ❤️</button>`;
             } else if (q.isText) {
@@ -605,10 +605,15 @@
 
         function prevQ() {
             if (currentIndex > 0) {
-                // Очищаем ответ текущего и предыдущего вопроса при шаге назад
-                delete answers[questions[currentIndex].id];
+                // Очищаем ответ на текущий и предыдущий вопрос при переходе назад, чтобы перепройти честно
+                const currentQ = questions[currentIndex];
+                delete answers[currentQ.id];
+                
                 currentIndex--;
-                delete answers[questions[currentIndex].id];
+                
+                const prevQ = questions[currentIndex];
+                delete answers[prevQ.id];
+
                 render();
             }
         }
@@ -616,7 +621,7 @@
         async function sendResult() {
             const lastQ = questions[questions.length - 1];
             if (lastQ.isText && (!answers[lastQ.id] || !answers[lastQ.id].trim())) {
-                alert('Пожалуйста, напиши ответ на последний вопрос!');
+                alert('Пожалуйста, напиши хоть пару слов в ответе!');
                 return;
             }
 
