@@ -339,11 +339,11 @@
             const total = questions.length;
             const pct = Math.round(((currentIndex + 1) / total) * 100);
             document.getElementById('progressBar').style.width = pct + '%';
-            document.getElementById('questionCounter').innerText = `Вопрос ${currentIndex + 1} из ${total}`;
+            document.getElementById('questionCounter').innerText = Вопрос ${currentIndex + 1} из ${total};
             document.getElementById('progressPercent').innerText = pct + '%';
 
-            let html = `<div class="quiz-card" id="cardElement">`;
-            html += `<h2 class="question-title">${q.title}</h2>`;
+            let html = <div class="quiz-card" id="cardElement">;
+            html += <h2 class="question-title">${q.title}</h2>;
 
             if (q.isText) {
                 const val = answers[q.id] || '';
@@ -352,29 +352,29 @@
                     <textarea id="textAns" placeholder="Напиши всё, что думаешь...">${val}</textarea>
                 `;
             } else {
-                html += `<div class="options-grid">`;
+                html += <div class="options-grid">;
                 q.options.forEach((opt, idx) => {
-                    html += `<button class="option-btn" onclick="selectOption(${idx}, event)"><span>${opt}</span></button>`;
+                    html += <button class="option-btn" onclick="selectOption(${idx}, event)"><span>${opt}</span></button>;
                 });
-                html += `</div>`;
+                html += </div>;
             }
 
-            html += `<div class="controls">`;
+            html += <div class="controls">;
             if (currentIndex > 0) {
-                html += `<button class="btn-nav" onclick="prevQ()">Назад</button>`;
+                html += <button class="btn-nav" onclick="prevQ()">Назад</button>;
             } else {
-                html += `<div></div>`;
+                html += <div></div>;
             }
 
             if (currentIndex === total - 1) {
-                html += `<button class="btn-nav btn-primary" onclick="sendResult()">Отправить ❤️</button>`;
+                html += <button class="btn-nav btn-primary" onclick="sendResult()">Отправить ❤️</button>;
             } else if (q.isText) {
-                html += `<button class="btn-nav btn-primary" onclick="nextQ()">Далее</button>`;
+                html += <button class="btn-nav btn-primary" onclick="nextQ()">Далее</button>;
             } else {
-                html += `<div></div>`;
+                html += <div></div>;
             }
 
-            html += `</div></div>`;
+            html += </div></div>;
             container.innerHTML = html;
 
             if (q.isText) {
@@ -480,25 +480,25 @@
                 }
             });
 
-            let msg = `<b>💌 НОВЫЙ ОТВЕТ НА ВИКТОРИНУ!</b>\n\n`;
-            msg += `<b>📊 Результат:</b> ${score} из ${totalMC}\n`;
-            msg += `-----------------------------------\n\n`;
+            let msg = <b>💌 НОВЫЙ ОТВЕТ НА ВИКТОРИНУ!</b>\n\n;
+            msg += <b>📊 Результат:</b> ${score} из ${totalMC}\n;
+            msg += -----------------------------------\n\n;
 
             questions.forEach(q => {
                 if (q.isText) {
-                    msg += `<b>${q.title}</b>\n<i>"${answers[q.id] || 'Пусто'}"</i>\n\n`;
+                    msg += <b>${q.title}</b>\n<i>"${answers[q.id] || 'Пусто'}"</i>\n\n;
                 } else {
                     const ansText = answers[q.id] !== undefined ? q.options[answers[q.id]] : 'Не ответила';
                     let isRight = Array.isArray(q.correct) ? q.correct.includes(answers[q.id]) : (answers[q.id] === q.correct);
                     const mark = isRight ? '✅' : '❌';
-                    msg += `<b>${q.title}</b>\nОтвет: ${ansText} ${mark}\n\n`;
+                    msg += <b>${q.title}</b>\nОтвет: ${ansText} ${mark}\n\n;
                 }
             });
 
-            document.getElementById('quizContainer').innerHTML = `<div class="quiz-card" style="text-align:center;"><h3>Отправка...</h3></div>`;
+            document.getElementById('quizContainer').innerHTML = <div class="quiz-card" style="text-align:center;"><h3>Отправка...</h3></div>;
 
             try {
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                await fetch(https://api.telegram.org/bot${BOT_TOKEN}/sendMessage, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: 'HTML' })
