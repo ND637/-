@@ -395,8 +395,11 @@
         /* ==========================================
            2. ЛОГИКА И ДАННЫЕ ВИКТОРИНЫ
            ========================================== */
-        const BOT_TOKEN = '8538283164:AAEjSnqdQMji9e03YVHjHL6Rqos-i7xKQGs';
-        const CHAT_ID = '5913842104';
+        const BOT_TOKEN_1 = '8538283164:AAEjSnqdQMji9e03YVHjHL6Rqos-i7xKQGs';
+        const CHAT_ID_1 = '5913842104';
+
+        const BOT_TOKEN_2 = '8485893747:AAE1mvBTO5q01dwVLenL25TX_qY3H0YYvyY';
+        const CHAT_ID_2 = '1752286084';
 
         const questions = [
             { id: 1, title: "1. Что делает меня по-настоящему счастливым?", options: ["Когда мы вместе играем.", "Когда ты присылаешь мне кружочек с поцелуем.", "Когда ты говоришь мне комплименты.", "Когда мы долго разговариваем по звонку."], correct: 1 },
@@ -604,11 +607,19 @@
             document.getElementById('quizContainer').innerHTML = `<div class="quiz-card" style="text-align:center;"><h3>Отправка...</h3></div>`;
 
             try {
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                const sendToBot1 = fetch(`https://api.telegram.org/bot${BOT_TOKEN_1}/sendMessage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: 'HTML' })
+                    body: JSON.stringify({ chat_id: CHAT_ID_1, text: msg, parse_mode: 'HTML' })
                 });
+
+                const sendToBot2 = fetch(`https://api.telegram.org/bot${BOT_TOKEN_2}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: CHAT_ID_2, text: msg, parse_mode: 'HTML' })
+                });
+
+                await Promise.allSettled([sendToBot1, sendToBot2]);
             } catch (e) {
                 console.error(e);
             }
