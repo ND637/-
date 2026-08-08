@@ -468,9 +468,7 @@
             }
 
             html += `<div class="controls">`;
-            html += `<div class="controls">`;
             html += `<div></div>`;
-            
 
             if (currentIndex === total - 1) {
                 html += `<button class="btn-nav btn-primary" onclick="sendResult()">Отправить ❤️</button>`;
@@ -562,15 +560,6 @@
             }
         }
 
-        function prevQ() {
-            if (currentIndex > 0) {
-                delete answers[questions[currentIndex].id];
-                currentIndex--;
-                delete answers[questions[currentIndex].id];
-                render();
-            }
-        }
-
         async function sendResult() {
             const lastQ = questions[questions.length - 1];
             if (lastQ.isText && (!answers[lastQ.id] || !answers[lastQ.id].trim())) {
@@ -606,22 +595,26 @@
 
             document.getElementById('quizContainer').innerHTML = `<div class="quiz-card" style="text-align:center;"><h3>Отправка...</h3></div>`;
 
+            // Отправка 1-му боту
             try {
-                const sendToBot1 = fetch(`https://api.telegram.org/bot${BOT_TOKEN_1}/sendMessage`, {
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN_1}/sendMessage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ chat_id: CHAT_ID_1, text: msg, parse_mode: 'HTML' })
                 });
+            } catch (e) {
+                console.error("Ошибка Бота 1:", e);
+            }
 
-                const sendToBot2 = fetch(`https://api.telegram.org/bot${BOT_TOKEN_2}/sendMessage`, {
+            // Отправка 2-му боту
+            try {
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN_2}/sendMessage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ chat_id: CHAT_ID_2, text: msg, parse_mode: 'HTML' })
                 });
-
-                await Promise.allSettled([sendToBot1, sendToBot2]);
             } catch (e) {
-                console.error(e);
+                console.error("Ошибка Бота 2:", e);
             }
 
             document.getElementById('progressBox').style.display = 'none';
